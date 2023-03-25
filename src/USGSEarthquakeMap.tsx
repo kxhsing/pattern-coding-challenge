@@ -13,12 +13,14 @@ import earthquakesData from "./data/earthquakes.geojson"
 
 mapboxgl.accessToken = accessToken
 
+
 function USGSEarthquakeMap(){
     const mapContainer = useRef(null);
     const [map, setMap] = useState(null);
     const [lng, setLng] = useState(-70.9);
     const [lat, setLat] = useState(42.35);
     const [zoom, setZoom] = useState(2);
+    const geoData = require("./data/countries.json");
 
     const countryOptions = [{"label": "All", "value": ""}, ...getCountryOptions()]
 
@@ -103,10 +105,7 @@ function USGSEarthquakeMap(){
             .addTo(map);
           });
 
-
-
           filterElem!.onchange = () => {
-            const geoData = require("./data/countries.json");
             // @ts-ignore
             const newCountry: string = filterElem.value;
             const newGeoJSON = {...geoData };
@@ -125,11 +124,12 @@ function USGSEarthquakeMap(){
             const newCountryCoordinates = newCountryData.geometry.coordinates
             // @ts-ignore
             newGeoJSON.features = geoData.features.filter(feature => feature.properties.ISO_A3 === newCountry);
-            const newCountryRegion = Turf.multiPolygon(newCountryCoordinates)
+            const newCountryRegion = newCountryData.geometry.type === "MultiPolygon" ? Turf.multiPolygon(newCountryCoordinates) : Turf.polygon(newCountryCoordinates) 
             const centroid = Turf.centroid(newCountryRegion);
             const centerCoordinates = centroid.geometry.coordinates;
             map.flyTo({
               center: centerCoordinates,
+              zoom: 4,
               essential: true // this animation is considered essential with respect to prefers-reduced-motion
               });
             map.setFilter(
@@ -139,9 +139,9 @@ function USGSEarthquakeMap(){
             map.getSource('countries').setData(newGeoJSON);
 
           };
-            
         });
 
+        
         // Add each country as an option to filter for Earthquake data
         const filterElem = document.getElementById('countryFilter');
         countryOptions.forEach(country => {
