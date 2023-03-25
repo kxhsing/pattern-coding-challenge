@@ -1,10 +1,12 @@
 // @ts-ignore
 import { EventData } from '!mapbox-gl' // eslint-disable-line import/no-webpack-loader-syntax
 
+
+export const geoData = require("./data/countries.json");
+
 export const getCountryOptions = () =>{
-    const data = require("./data/countries.json");
     // @ts-ignore
-    const returnData = data.features.map(feature =>{
+    const returnData = geoData.features.map(feature =>{
         return { "label": feature.properties.ADMIN, "value": feature.properties.ISO_A3 }
     })
     return returnData

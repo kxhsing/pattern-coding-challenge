@@ -2,6 +2,7 @@ import React, { useRef, useEffect, useState } from 'react';
 import './USGSEarthquakeMap.css';
 import { getEarthquakePopupHTML, getCountryOptions } from './helpers';
 import { accessToken } from './constants';
+import { geoData }  from './helpers';
 import * as Turf from '@turf/turf';
 
 // @ts-ignore
@@ -20,7 +21,7 @@ function USGSEarthquakeMap(){
     const [lng, setLng] = useState(-70.9);
     const [lat, setLat] = useState(42.35);
     const [zoom, setZoom] = useState(2);
-    const geoData = require("./data/countries.json");
+    
 
     const countryOptions = [{"label": "All", "value": ""}, ...getCountryOptions()]
 
