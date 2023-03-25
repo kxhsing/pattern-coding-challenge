@@ -1,16 +1,15 @@
 import React, { useRef, useEffect, useState } from 'react';
 import './USGSEarthquakeMap.css';
 import { getEarthquakePopupHTML, getCountryOptions } from './helpers';
-import { accessToken } from './constants';
-import { geoData }  from './helpers';
+import { accessToken, geoData } from './constants';
 import * as Turf from '@turf/turf';
 
 // @ts-ignore
 import mapboxgl, { Map, MapboxEvent } from '!mapbox-gl'; // eslint-disable-line import/no-webpack-loader-syntax
 // @ts-ignore
-import countriesData from "./data/countries.geojson"
+import countriesData from './data/countries.geojson'
 // @ts-ignore
-import earthquakesData from "./data/earthquakes.geojson"
+import earthquakesData from './data/earthquakes.geojson'
 
 mapboxgl.accessToken = accessToken
 
@@ -22,11 +21,9 @@ function USGSEarthquakeMap(){
     const [lat, setLat] = useState(42.35);
     const [zoom, setZoom] = useState(2);
     
-
-    const countryOptions = [{"label": "All", "value": ""}, ...getCountryOptions()]
+    const countryOptions = [{'label': 'All', 'value': ''}, ...getCountryOptions()]
 
     useEffect(() => {
-
         const map: Map = new mapboxgl.Map({
           container: mapContainer.current,
           style: 'mapbox://styles/mapbox/streets-v12',
@@ -112,9 +109,9 @@ function USGSEarthquakeMap(){
             const newGeoJSON = {...geoData };
 
             if (!newCountry){
-              map.setFilter("earthquakes",null);
-              map.setFilter("countries",null);
-              map.setFilter("countries-outline",null);
+              map.setFilter('earthquakes',null);
+              map.setFilter('countries',null);
+              map.setFilter('countries-outline',null);
               newGeoJSON.features = [...geoData.features];
               map.getSource('countries').setData(newGeoJSON);
               return
@@ -125,7 +122,9 @@ function USGSEarthquakeMap(){
             const newCountryCoordinates = newCountryData.geometry.coordinates
             // @ts-ignore
             newGeoJSON.features = geoData.features.filter(feature => feature.properties.ISO_A3 === newCountry);
-            const newCountryRegion = newCountryData.geometry.type === "MultiPolygon" ? Turf.multiPolygon(newCountryCoordinates) : Turf.polygon(newCountryCoordinates) 
+            
+            // calculate region for filtering and center coordinates to move map to 
+            const newCountryRegion = newCountryData.geometry.type === 'MultiPolygon' ? Turf.multiPolygon(newCountryCoordinates) : Turf.polygon(newCountryCoordinates) 
             const centroid = Turf.centroid(newCountryRegion);
             const centerCoordinates = centroid.geometry.coordinates;
             map.flyTo({
@@ -135,10 +134,9 @@ function USGSEarthquakeMap(){
               });
             map.setFilter(
               "earthquakes",
-              ["within",newCountryRegion]
+              ["within", newCountryRegion]
             );
             map.getSource('countries').setData(newGeoJSON);
-
           };
         });
 
@@ -157,8 +155,8 @@ function USGSEarthquakeMap(){
         <div className='usgs-earthquake-map'>
             <div ref={mapContainer} className='map-container'/>
             <div>
-            <select id="countryFilter" name="countryFilter">
-              <option value="">Select Country</option>
+            <select id='countryFilter' name='countryFilter'>
+              <option value=''>Select Country</option>
               
             </select>
             </div>
